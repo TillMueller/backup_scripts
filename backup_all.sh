@@ -3,11 +3,14 @@
 #Enable verbose output
 set -x
 
+#Fixed paths
+IMGLOCATION="/var/lib/libvirt/images"
+
 #Used for testing
-#VMs=( "debian9-openttd" )
+VMs=( "debian9-openttd" "debian9-nico" )
 
 #List all VMs
-VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "win10-assettocorsa" "debian9-onlyoffice" )
+#VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "win10-assettocorsa" "debian9-onlyoffice" )
 
 #Get times and dates
 now="$(date '+%F_%T:%N')"
@@ -48,7 +51,16 @@ EOF
 #Backup all VMs to directory
 for i in "${VMs[@]}"
 do
-	/root/scripts/kvm-backup.sh -t $LOCALDIR $i
+	tmp=$(virsh list --all | grep " $i " | awk '{ print $3}')
+	if ([ "$tmp" == "running" ])
+	then
+		/root/scripts/kvm-backup.sh -t $LOCALDIR $i
+	else
+		mkdir "$LOCALDIR/$i"
+		mkdir "$LOCALDIR/$i/backup-0"
+		cp "$IMGLOCATION/$i.qcow2" "$LOCALDIR/$i/backup-0/"
+		virsh dumpxml "$i" > "$LOCALDIR/$i/backup-0/$i.xml"
+	fi
 done
 
 #Copy logfile to backup folder
