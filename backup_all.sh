@@ -7,10 +7,10 @@ set -x
 IMGLOCATION="/var/lib/libvirt/images"
 
 #Used for testing
-VMs=( "debian9-openttd" "debian9-nico" )
+#VMs=( "debian9-openttd" "debian9-nico" )
 
 #List all VMs
-#VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "win10-assettocorsa" "debian9-onlyoffice" )
+VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "win10-assettocorsa" "debian9-onlyoffice" )
 
 #Get times and dates
 now="$(date '+%F_%T:%N')"
@@ -62,6 +62,9 @@ do
 		virsh dumpxml "$i" > "$LOCALDIR/$i/backup-0/$i.xml"
 	fi
 done
+
+#Save iptables rules
+iptables-save > "$LOCALDIR/rules.v4"
 
 #Copy logfile to backup folder
 cp $LOGFILE $LOCALDIR
