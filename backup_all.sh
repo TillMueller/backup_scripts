@@ -16,7 +16,7 @@ today="$(date '+%F')"
 #Folder to remove locally -> Keep the last two days locally
 olddatelocal="$(date -d '2 days ago 13:00' '+%F')"
 
-#Folder to remove remotely -> Keep the last five days remotely
+#Folder to remove remotely -> Keep the last seven days remotely
 olddateremote="$(date -d '7 days ago 13:00' '+%F')"
 
 #Get paths from dates
