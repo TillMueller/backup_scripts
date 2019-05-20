@@ -178,7 +178,7 @@ function copyBlock() {
       safeExit $VMNAME "BlockJob aborted. Disk full ?"
     fi
     logLineLocal "Copying... $PROGRESS %"
-    sleep 5;
+    sleep 30;
   done
 }
 
