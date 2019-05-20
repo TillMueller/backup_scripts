@@ -3,14 +3,17 @@
 #Enable verbose output
 set -x
 
+#Set path to enable iptables-save
+PATH=/usr/sbin:/sbin:/usr/bin:/bin
+
 #Fixed paths
 IMGLOCATION="/var/lib/libvirt/images"
 
 #Used for testing
-#VMs=( "debian9-openttd" "debian9-nico" )
+#VMs=( "debian9-openttd" )
 
 #List all VMs
-VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "win10-assettocorsa" "debian9-onlyoffice" )
+VMs=( "debian9-mailcow" "debian9-apache2" "debian9-gitlab" "debian9-discordjockey" "debian9-minecraft" "debian9-openttd" "debian9-teamspeak" "debian9-openvpn" "debian9-proftpd" "debian9-netdata" "debian9-guacamole" "debian9-onlyoffice" "debian9-websites" "debian9-webedition" "debian9-webvirtcloud" "debian9-docker" )
 
 #Get times and dates
 now="$(date '+%F_%T:%N')"
@@ -19,8 +22,8 @@ today="$(date '+%F')"
 #Folder to remove locally -> Keep the last two days locally
 olddatelocal="$(date -d '2 days ago 13:00' '+%F')"
 
-#Folder to remove remotely -> Keep the last seven days remotely
-olddateremote="$(date -d '7 days ago 13:00' '+%F')"
+#Folder to remove remotely -> Keep the last five days remotely
+olddateremote="$(date -d '5 days ago 13:00' '+%F')"
 
 #Get paths from dates
 LOCALDIR="/srv/vmdata/backup/$today"
@@ -47,6 +50,8 @@ rm -r $REMOTEDIR
 quit
 EOF
 
+#Remove old backup locally
+rm -r $OLDLOCALDIR
 
 #Backup all VMs to directory
 for i in "${VMs[@]}"
@@ -66,18 +71,14 @@ done
 #Save iptables rules
 iptables-save > "$LOCALDIR/rules.v4"
 
-#Copy logfile to backup folder
-cp $LOGFILE $LOCALDIR
-
-#Copy backup to backup space
-scp -r $LOCALDIR u180771@u180771.your-backup.de:$REMOTEDIR
-
-#Remove old backup locally
-rm -r $OLDLOCALDIR
-
 #Remove old backup remotely
 lftp -u u180771,password sftp://u180771.your-backup.de << EOF
 rm -r $OLDREMOTEDIR
 quit
 EOF
 
+#Copy logfile to backup folder
+cp $LOGFILE $LOCALDIR
+
+#Copy backup to backup space
+scp -r $LOCALDIR u180771@u180771.your-backup.de:$REMOTEDIR
