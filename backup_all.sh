@@ -53,6 +53,9 @@ EOF
 #Remove old backup locally
 rm -r $OLDLOCALDIR
 
+#Create folder if it doesn't exist
+mkdir -p $LOCALDIR
+
 #Backup all VMs to directory
 for i in "${VMs[@]}"
 do
