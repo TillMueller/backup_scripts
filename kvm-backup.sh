@@ -326,12 +326,12 @@ function backupVM() {
   suspendVM $VMNAME
   # abort jobs
   abortAllJobs $VMNAME
+  # restore vm definition
+  defineVM $VMNAME
   # save vm state and power it off
   saveVMState $VMNAME
   # restore VM state. this is necessary because the save-vm stop the vm
   restoreVMState $VMNAME
-  # restore vm definition
-  defineVM $VMNAME
 
   # end backup
   logLine "Backup of $VMNAME finished"
